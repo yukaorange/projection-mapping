@@ -196,10 +196,6 @@ class App {
   addLinkListeners() {
     const links = document.querySelectorAll('a')
 
-
-
-
-    
     each(links, link => {
       link.onclick = event => {
         const { href } = link

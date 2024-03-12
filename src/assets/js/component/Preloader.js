@@ -37,14 +37,14 @@ export default class Preloader extends Component {
 
       image.src = imageDom.getAttribute('data-src')
 
-      image.onload = () => {
-        const texture = this.textureLoader.load(image.src)
+      image.onload = async () => {
+        this.textureLoader.load(image.src, texture => {
+          texture.needsUpdate = true
 
-        texture.needsUpdate = true
+          window.TEXTURES[id] = texture
 
-        window.TEXTURES[id] = texture
-
-        this.onAssetLoaded()
+          this.onAssetLoaded()
+        })
       }
 
       image.onerror = error => {

@@ -275,15 +275,17 @@ export default class Canvas {
 
   update(scroll) {
     if (this.home) {
-      this.home.update(scroll)
+      this.home.update({ scroll: scroll, time: this.time })
       this.home.setParameter(this.PARAMS)
     }
 
-    const timeDelta = this.clock.getDelta() * this.time.delta
+    const timeDelta = this.clock.getElapsedTime()
 
     this.time.previous = this.time.current
 
     this.time.current += timeDelta
+
+    this.time.delta = this.time.current - this.time.previous
 
     this.renderer.render(this.scene, this.camera)
   }

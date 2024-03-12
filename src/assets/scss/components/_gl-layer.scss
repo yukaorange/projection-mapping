@@ -1,0 +1,22 @@
+@use "./../mixin/" as *;
+
+.gl-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.gl-layer__gallery {
+  width: 80vw;
+  aspect-ratio: 16/9;
+}
+
+@include mq(sp) {
+  .gl-layer__gallery {
+    width: 90vw;
+    aspect-ratio: 16/9;
+  }
+}

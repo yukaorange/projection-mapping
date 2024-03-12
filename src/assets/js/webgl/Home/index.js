@@ -1,11 +1,12 @@
 import map from 'lodash/map'
 import GSAP from 'gsap'
 
-import { PlaneGeometry } from 'three'
+import { BoxGeometry, PlaneGeometry } from 'three'
 
 import * as THREE from 'three'
 
-import Plane from './Plane'
+import InstancedPlane from './mesh/InstancedPlane'
+import ProjectedMaterial from './material/ProjectedMaterial'
 
 export default class Home {
   constructor({ scene, sizes, device }) {
@@ -14,6 +15,8 @@ export default class Home {
     this.sizes = sizes
 
     this.device = device
+
+    this.element = document.querySelector('.gl-layer__gallery')
 
     this.x = {
       current: 0,
@@ -46,9 +49,13 @@ export default class Home {
 
     this.createGeometry()
 
-    this.createPlane()
+    this.createMaterial()
 
-    this.scene.add(this.plane.mesh)
+    this.createInstancedMesh()
+
+    this.scene.add(this.instancedPlane.mesh)
+
+    this.createHelper()
 
     this.onResize({
       sizes: this.sizes,
@@ -59,15 +66,38 @@ export default class Home {
   }
 
   createGeometry() {
-    this.geometry = new PlaneGeometry(1, 1, 100, 100)
+    this.planeGeometry = new PlaneGeometry(1, 1, 1, 1)
   }
 
-  createPlane() {
-    this.plane = new Plane({
-      geometry: this.geometry,
-      sizes: this.sizes,
-      device: this.device
+  createMaterial() {
+    this.texture = window.TEXTURES['1']
+
+    this.material = new ProjectedMaterial({
+      texture: this.texture
     })
+  }
+
+  createInstancedMesh() {
+    this.instancedPlane = new InstancedPlane({
+      geometry: this.planeGeometry,
+      material: this.material,
+      element: this.element,
+      sizes: this.sizes,
+      device: this.device,
+      instanceCount: 36
+    })
+  }
+
+  createHelper() {
+    this.cameraHelper = new THREE.CameraHelper(
+      this.instancedPlane.material.projector
+    )
+
+    this.axesHelper = new THREE.AxesHelper(5)
+
+    this.scene.add(this.cameraHelper)
+
+    this.scene.add(this.axesHelper)
   }
 
   /**
@@ -75,19 +105,27 @@ export default class Home {
    */
 
   show() {
-    this.plane.show()
+    this.instancedPlane.show()
   }
 
   hide() {
-    this.plane.hide()
+    this.instancedPlane.hide()
   }
 
   /**
    * events
    */
   onResize(values) {
-    if (this.plane) {
-      this.plane.onResize(values)
+    if (this.instancedPlane) {
+      this.instancedPlane.onResize(values)
+    }
+
+    if (this.material) {
+      const scales = {
+        scaleX: this.instancedPlane.scaleX,
+        scaleY: this.instancedPlane.scaleY
+      }
+      this.material.onResize(scales)
     }
   }
 
@@ -117,18 +155,22 @@ export default class Home {
   /**
    * update
    */
-  update() {
-    if (!this.plane) return
+  update({ scroll, time }) {
+    if (!this.instancedPlane) return
+    this.instancedPlane.update({
+      scroll: scroll,
+      time: time
+    })
   }
 
   setParameter(params) {
-    this.plane.setParameter(params)
+    this.instancedPlane.setParameter(params)
   }
 
   /**
    * destroy
    */
   destroy() {
-    this.scene.remove(this.plane.mesh)
+    this.scene.remove(this.instancedPlane.mesh)
   }
 }
