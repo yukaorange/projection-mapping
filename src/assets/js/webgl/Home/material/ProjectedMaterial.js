@@ -63,13 +63,13 @@ export default class ProjectedMaterial extends ShaderMaterial {
     const aspectX = scales.scaleX / scales.scaleY
     const aspectY = scales.scaleY / scales.scaleX
 
-    const distance = this.projector.position.z
+    const distance = this.projector.position.z 
 
     const halfHeight = scales.scaleY / 2
 
     const rad = Math.PI / 180
 
-    const fov = Math.tan(halfHeight / distance) * 2
+    const fov = (Math.tan(halfHeight / distance) * 2) / rad
 
     this.textureAspectX =
       this.texture.source.data.width / this.texture.source.data.height
@@ -77,7 +77,7 @@ export default class ProjectedMaterial extends ShaderMaterial {
     this.textureAspectY =
       this.texture.source.data.height / this.texture.source.data.width
 
-    this.projector.fov = fov / rad
+    this.projector.fov = fov
 
     this.projector.updateProjectionMatrix()
 

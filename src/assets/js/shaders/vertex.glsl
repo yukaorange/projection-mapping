@@ -2,8 +2,6 @@ precision mediump float;
 
 #include './modules/noise.glsl'
 
-attribute vec3 aPosition;
-
 uniform mat4 uProjectorModelMatrix;
 uniform mat4 uProjectorViewMatrix;
 uniform mat4 uProjectorProjectionMatrix;
@@ -16,14 +14,14 @@ varying vec4 vWorldPosition;
 void main() {
   vUv = uv;
 
-  vec3 transformed = aPosition + position;
+  vec4 transformedPosition = instanceMatrix * vec4(position, 1.0);
 
-  vNormal = mat3(modelMatrix) * normal;
+  vNormal = normalize(normalMatrix * normal);
 
-  vWorldPosition = modelMatrix * vec4(transformed, 1.0);
+  vWorldPosition = transformedPosition;
 
   vTexCoords = uProjectorProjectionMatrix * uProjectorViewMatrix * vWorldPosition;
 
-  gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(transformed, 1.0);
+  gl_Position = projectionMatrix * viewMatrix * transformedPosition;
 
 }
