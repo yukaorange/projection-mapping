@@ -12,6 +12,7 @@
 .gl-layer__gallery {
   width: 80vw;
   aspect-ratio: 16/9;
+  border: 0.1rem solid var(--blue-1);
 }
 
 @include mq(sp) {

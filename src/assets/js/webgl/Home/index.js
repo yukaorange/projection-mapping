@@ -1,7 +1,7 @@
 import map from 'lodash/map'
 import GSAP from 'gsap'
 
-import { BoxGeometry, PlaneGeometry } from 'three'
+import { PlaneGeometry } from 'three'
 
 import * as THREE from 'three'
 

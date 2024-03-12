@@ -16,14 +16,13 @@ varying vec4 vWorldPosition;
 void main() {
   vUv = uv;
 
+  vec3 transformed = aPosition + position;
+
   vNormal = mat3(modelMatrix) * normal;
 
-  vWorldPosition = modelMatrix * vec4(position, 1.0);
+  vWorldPosition = modelMatrix * vec4(transformed, 1.0);
 
   vTexCoords = uProjectorProjectionMatrix * uProjectorViewMatrix * vWorldPosition;
-
-  vec3 transformed = position + aPosition;
-  // vec3 transformed = position;
 
   gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(transformed, 1.0);
 

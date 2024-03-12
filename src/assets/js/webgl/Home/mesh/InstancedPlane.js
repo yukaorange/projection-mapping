@@ -59,15 +59,16 @@ export default class InstancedPlane {
     const count = Math.sqrt(this.instanceCount)
 
     const frameWidth = this.mesh.scale.x * count
-    const frameHeight = this.mesh.scale.y * count
 
-    console.log(frameWidth)
+    const frameHeight = this.mesh.scale.y * count
 
     const planeWidth = this.mesh.scale.x
     const planeHeight = this.mesh.scale.y
 
     const cellWidth = frameWidth / count
     const cellHeight = frameHeight / count
+
+    this.mesh.scale.x = cellWidth
 
     for (let i = 0; i < totalCount; i++) {
       const row = Math.floor(i / count)
@@ -102,6 +103,9 @@ export default class InstancedPlane {
       positions[index] = x
       positions[index + 1] = y
       positions[index + 2] = 0
+      // positions[index] = 0
+      // positions[index + 1] = 0
+      // positions[index + 2] = 0
     }
 
     const positionAttribute = new InstancedBufferAttribute(positions, 3)
@@ -134,6 +138,8 @@ export default class InstancedPlane {
    */
   onResize(value) {
     this.calculateBounds(value)
+
+    this.updateInstanceProperty()
   }
 
   /**
@@ -148,10 +154,6 @@ export default class InstancedPlane {
 
     this.scaleX = this.sizes.width * this.width
     this.scaleY = this.sizes.height * this.height
-
-    this.mesh.scale.x = this.scaleX / count
-    this.mesh.scale.y = this.scaleY / count
-    // this.mesh.scale.x = this.scaleX
   }
 
   updateX(x = 0) {
