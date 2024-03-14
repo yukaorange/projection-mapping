@@ -57,6 +57,8 @@ export default class InstancedPlane {
     const frameWidth = this.mesh.scale.x * count
     const frameHeight = this.mesh.scale.y * count
 
+    const standardPositionX = this.mesh.position.x
+    const standardPositionY = this.mesh.position.y
 
     const cellWidth = frameWidth / count
     const cellHeight = frameHeight / count
@@ -65,27 +67,8 @@ export default class InstancedPlane {
       const row = Math.floor(i / count)
       const col = i % count
 
-      let x = col - count / 2
-      let y = row - count / 2
-
-      if (x >= 0) {
-        x += 1
-      }
-      if (y >= 0) {
-        y += 1
-      }
-
-      if (x >= 0) {
-        x = x * cellWidth - cellWidth / 2
-      } else {
-        x = x * cellWidth + cellWidth / 2
-      }
-
-      if (y >= 0) {
-        y = y * cellHeight - cellHeight / 2
-      } else {
-        y = y * cellHeight + cellHeight / 2
-      }
+      let x = standardPositionX + col * cellWidth
+      let y = standardPositionY - row * cellHeight
 
       const matrix = new THREE.Matrix4()
 
@@ -150,15 +133,17 @@ export default class InstancedPlane {
   }
 
   updateX(x = 0) {
-    // this.x = (this.bounds.left + x) / window.innerWidth
-    // this.mesh.position.x =
-    //   -this.sizes.width / 2 + this.mesh.scale.x / 2 + this.x * this.sizes.width
+    this.x = (this.bounds.left + x) / window.innerWidth
+
+    this.mesh.position.x =
+      -this.sizes.width / 2 + this.mesh.scale.x / 2 + this.x * this.sizes.width
   }
 
   updateY(y = 0) {
-    // this.y = (this.bounds.top + y) / window.innerHeight
-    // this.mesh.position.y =
-    //   this.sizes.height / 2 - this.mesh.scale.y / 2 - this.y * this.sizes.height
+    this.y = (this.bounds.top + y) / window.innerHeight
+
+    this.mesh.position.y =
+      this.sizes.height / 2 - this.mesh.scale.y / 2 - this.y * this.sizes.height
   }
 
   update({ scroll, speed }) {

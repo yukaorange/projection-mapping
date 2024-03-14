@@ -5,19 +5,22 @@
   inset: 0;
   z-index: 0;
   display: grid;
-  place-items: center;
   pointer-events: none;
 }
 
 .gl-layer__gallery {
-  width: 80vw;
-  aspect-ratio: 16/9;
+  margin-top: 8rem;
+  width: calc(var(--col) * 24);
+  margin-left: auto;
+  margin-right: 4rem;
+  aspect-ratio: 8/5;
   border: 0.1rem solid var(--blue-1);
 }
 
 @include mq(sp) {
   .gl-layer__gallery {
-    width: 90vw;
-    aspect-ratio: 16/9;
+    width: calc(var(--col) * 8);
+    margin-right: 2rem;
+    aspect-ratio: 5/8;
   }
 }

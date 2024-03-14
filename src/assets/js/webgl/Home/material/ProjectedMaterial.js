@@ -58,12 +58,26 @@ export default class ProjectedMaterial extends ShaderMaterial {
   update() {}
 
   onResize(scales) {
+    const targetPosition = new THREE.Vector3(
+      scales.target.position.x + scales.scaleX / 2 - scales.target.scale.x / 2,
+      scales.target.position.y - scales.scaleY / 2 + scales.target.scale.y / 2,
+      5
+    )
+
+    this.projector.position.set(
+      targetPosition.x,
+      targetPosition.y,
+      targetPosition.z
+    )
+
+    this.projector.lookAt(targetPosition.x, targetPosition.y, 0)
+
     this.projector.aspect = scales.scaleX / scales.scaleY
 
     const aspectX = scales.scaleX / scales.scaleY
     const aspectY = scales.scaleY / scales.scaleX
 
-    const distance = this.projector.position.z 
+    const distance = this.projector.position.z
 
     const halfHeight = scales.scaleY / 2
 

@@ -84,7 +84,7 @@ export default class Home {
       element: this.element,
       sizes: this.sizes,
       device: this.device,
-      instanceCount: 36
+      instanceCount: 2500
     })
   }
 
@@ -120,11 +120,13 @@ export default class Home {
       this.instancedPlane.onResize(values)
     }
 
-    if (this.material) {
+    if (this.material && this.instancedPlane) {
       const scales = {
         scaleX: this.instancedPlane.scaleX,
-        scaleY: this.instancedPlane.scaleY
+        scaleY: this.instancedPlane.scaleY,
+        target: this.instancedPlane.mesh
       }
+
       this.material.onResize(scales)
     }
   }
