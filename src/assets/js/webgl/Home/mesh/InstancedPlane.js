@@ -108,24 +108,89 @@ export default class InstancedPlane {
     }
   }
 
-  calclateMatrixToSphere() {
-    const radius = 2
+  // calclateMatrixToSphere() {
+  //   const radius = 2
+  //   const matrices = new Float32Array(this.instanceCount * 16)
+
+  //   const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+
+  //   for (let i = 0; i < this.instanceCount; i++) {
+  //     const theta = i * goldenAngle // 方位角
+  //     const phi = Math.acos(1 - (2 * (i + 0.5)) / this.instanceCount) // 仰角
+
+  //     const x = radius * Math.sin(phi) * Math.cos(theta)
+  //     const y = radius * Math.sin(phi) * Math.sin(theta)
+  //     const z = radius * Math.cos(phi)
+
+  //     const position = new THREE.Vector3(x, y, z)
+  //     const target = new THREE.Vector3(0, 0, 0)
+  //     const up = new THREE.Vector3(0, 1, 0)
+
+  //     const rotateMatrix = new THREE.Matrix4()
+  //     rotateMatrix.lookAt(position, target, up)
+
+  //     const scaleMatrix = new THREE.Matrix4()
+  //     scaleMatrix.makeScale(0.1, 0.1, 0.1)
+
+  //     const matrix = new THREE.Matrix4()
+  //     matrix.multiply(rotateMatrix)
+  //     matrix.multiply(scaleMatrix)
+  //     matrix.setPosition(position)
+
+  //     matrix.toArray(matrices, i * 16)
+  //   }
+
+  //   const matrixData = new Float32Array(matrices)
+
+  //   const instancedMatrixAttribute = new THREE.InstancedBufferAttribute(
+  //     matrixData,
+  //     16,
+  //     false
+  //   )
+
+  //   this.mesh.geometry.setAttribute('aSphereMatrix', instancedMatrixAttribute)
+  // }
+
+  calclateMatrixToTriangle(n = 3) {
+    const baseRadius = 3
     const matrices = new Float32Array(this.instanceCount * 16)
-    const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+    const numLayers = 8
+    const layerHeightOffset = 0.1
+
+    function getPolygonPos(n, t, radius) {
+      const an = (Math.PI * 2) / n
+      const a = an / 2.0
+      const b = t / an
+      const x =
+        ((Math.cos(a) * Math.cos(t)) / Math.cos(an * (b - Math.floor(b)) - a)) *
+        radius
+      const y =
+        ((Math.cos(a) * Math.sin(t)) / Math.cos(an * (b - Math.floor(b)) - a)) *
+        radius
+      return { x, y }
+    }
 
     for (let i = 0; i < this.instanceCount; i++) {
-      const theta = i * goldenAngle // 方位角
-      const phi = Math.acos(1 - (2 * (i + 0.5)) / this.instanceCount) // 仰角
+      const layer = Math.floor(i / (this.instanceCount / numLayers))
 
-      const x = radius * Math.sin(phi) * Math.cos(theta)
-      const y = radius * Math.sin(phi) * Math.sin(theta)
-      const z = radius * Math.cos(phi)
+      const indexInLayer = i % (this.instanceCount / numLayers)
 
-      const position = new THREE.Vector3(x, y, z)
+      let height = layer * layerHeightOffset
+
+      height = height - numLayers * layerHeightOffset * 1
+
+      const radius = baseRadius + layer * 0.2
+
+      const t =
+        ((Math.PI * 2) / (this.instanceCount / numLayers)) * indexInLayer
+
+      const pos = getPolygonPos(n, t, radius)
+
+      const position = new THREE.Vector3(pos.x, pos.y, pos.z)
       const target = new THREE.Vector3(0, 0, 0)
       const up = new THREE.Vector3(0, 1, 0)
-      const rotateMatrix = new THREE.Matrix4()
 
+      const rotateMatrix = new THREE.Matrix4()
       rotateMatrix.lookAt(position, target, up)
 
       const scaleMatrix = new THREE.Matrix4()
@@ -134,7 +199,7 @@ export default class InstancedPlane {
       const matrix = new THREE.Matrix4()
       matrix.multiply(rotateMatrix)
       matrix.multiply(scaleMatrix)
-      matrix.setPosition(position)
+      matrix.setPosition(pos.x, pos.y, height)
 
       matrix.toArray(matrices, i * 16)
     }
@@ -147,54 +212,29 @@ export default class InstancedPlane {
       false
     )
 
-    this.mesh.geometry.setAttribute('aSphereMatrix', instancedMatrixAttribute)
+    this.mesh.geometry.setAttribute('aTriangleMatrix', instancedMatrixAttribute)
   }
 
-  calclateMatrixToCross() {
-    const radius = 2
-    const matrices = new Float32Array(this.instanceCount * 16)
-
-    const halfInstanceCount = this.instanceCount / 2
-    const spacing = (radius * 2) / halfInstanceCount
-
-    const globalRotateMatrix = new THREE.Matrix4()
-    globalRotateMatrix.makeRotationZ(Math.PI / 4)
+  addIndices() {
+    const indices = new Float32Array(this.instanceCount)
 
     for (let i = 0; i < this.instanceCount; i++) {
-      const matrix = new THREE.Matrix4()
-
-      const scaleMatrix = new THREE.Matrix4()
-      scaleMatrix.makeScale(0.1, 0.1, 0.1)
-
-      if (i < halfInstanceCount) {
-        matrix.setPosition(i * spacing - radius, 0, 0)
-      } else {
-        matrix.setPosition(0, (i - halfInstanceCount) * spacing - radius, 0)
-      }
-
-      matrix.multiply(scaleMatrix)
-      matrix.premultiply(globalRotateMatrix)
-
-      matrix.toArray(matrices, i * 16)
+      indices[i] = i
     }
 
-    const matrixData = new Float32Array(matrices)
+    const indexAttribute = new THREE.InstancedBufferAttribute(indices, 1)
 
-    const instancedMatrixAttribute = new THREE.InstancedBufferAttribute(
-      matrixData,
-      16,
-      false
-    )
-
-    this.mesh.geometry.setAttribute('aCrossMatrix', instancedMatrixAttribute)
+    this.mesh.geometry.setAttribute('aInstanceIndex', indexAttribute)
   }
 
-  updateInstanceProperty() {
+  updateInstanceProperty({ n = 3 } = {}) {
     this.calclateMatrixToProjection()
 
-    this.calclateMatrixToSphere()
+    // this.calclateMatrixToSphere()
 
-    this.calclateMatrixToCross()
+    this.calclateMatrixToTriangle(n)
+
+    this.addIndices()
 
     this.mesh.instanceMatrix.needsUpdate = true
   }
@@ -225,7 +265,9 @@ export default class InstancedPlane {
   onResize(value) {
     this.calculateBounds(value)
 
-    this.updateInstanceProperty()
+    this.updateInstanceProperty({
+      n: 3
+    })
 
     if (this.material) {
       const scales = {
@@ -258,12 +300,14 @@ export default class InstancedPlane {
 
   updateY(y = 0) {}
 
-  update({ scroll, speed, texture }) {
+  update({ scroll, time, texture }) {
     this.updateX(scroll.x)
 
     this.updateY(scroll.y)
 
     this.material.uniforms.uTexture.value = texture
+
+    this.material.uniforms.uTime.value += time.delta
   }
 
   setParameter(params) {
