@@ -79,9 +79,9 @@ void main() {
 
   vec3 spherePos = calculateSpherePosition(aInstanceIndex, sphereRadius);
 
-  mat4 rotationMatrix = lookAt(spherePos, vec3(0.0, 0.0, 0.0));
-
-  vec4 scaledPos = calcScaling(vec4(position, 1.0), 0.1);
+  mat4 lookAtMatrix = lookAt(spherePos, vec3(0.0, 0.0, 0.0));
+  vec4 rotatedPosition = lookAtMatrix * vec4(position, 1.0);
+  vec4 scaledPos = calcScaling(rotatedPosition, 0.1);
 
   vec3 result = scaledPos.xyz + spherePos;
 
