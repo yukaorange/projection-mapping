@@ -1,4 +1,5 @@
 precision mediump float;
+
 #include './modules/noise.glsl'
 
 uniform float uAlpha;
@@ -22,18 +23,24 @@ void main() {
   uv.y *= min(uTextureAspectY, 1.);
   uv = uv + vec2(0.5);
 
-  vec4 color = texture2D(uTexture, uv);
+  vec4 projectionMapping = texture2D(uTexture, uv);
 
-  color.a *= uAlpha;
+  projectionMapping.a *= uAlpha;
 
   vec3 projectionDirection = normalize(uProjectorPosition - vWorldPosition.xyz);
 
   float dotProduct = dot(vNormal, projectionDirection);
 
   if(dotProduct < 0.0) {
-    // color = vec4(0.0, 0.0, 0.0, 1.0);
+    // projectionMapping = vec4(0.0, 0.0, 0.0, 1.0);
   }
 
-  gl_FragColor = color;
+  vec3 baseColor = vec3(uv.r, 0.0, 0.0);
+
+  vec4 selectedColor;
+  // selectedColor = projectionMapping;
+  selectedColor = vec4(baseColor, 1.0);
+
+  gl_FragColor = selectedColor;
 
 }

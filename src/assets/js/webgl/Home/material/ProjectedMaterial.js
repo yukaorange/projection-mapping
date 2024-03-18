@@ -7,7 +7,7 @@ import vertex from '@js/shaders/vertex.glsl'
 import fragment from '@js/shaders/fragment.glsl'
 
 export default class ProjectedMaterial extends ShaderMaterial {
-  constructor({ texture }) {
+  constructor({ texture, instanceCount }) {
     let width = texture.source.data.width
 
     let height = texture.source.data.height
@@ -46,7 +46,9 @@ export default class ProjectedMaterial extends ShaderMaterial {
         uProjectorViewMatrix: { value: projectorViewMatrix },
         uProjectorModelMatrix: { value: projectorModelMatix },
         uProjectorPosition: { value: projectorPosition },
-        uAlpha: { value: 1 }
+        uCount: { value: instanceCount },
+        uAlpha: { value: 1 },
+        uTime: { value: 0 }
       }
     })
 
@@ -59,8 +61,14 @@ export default class ProjectedMaterial extends ShaderMaterial {
 
   onResize(scales) {
     const targetPosition = new THREE.Vector3(
-      scales.target.position.x + scales.scaleX / 2 - scales.target.scale.x / 2,
-      scales.target.position.y - scales.scaleY / 2 + scales.target.scale.y / 2,
+      scales.mesh.position.x +
+        scales.standardPositionX +
+        scales.scaleX / 2 -
+        scales.mesh.scale.x / 2,
+      scales.mesh.position.y +
+        scales.standardPositionY -
+        scales.scaleY / 2 +
+        scales.mesh.scale.y / 2,
       5
     )
 

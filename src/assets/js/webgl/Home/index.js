@@ -7,10 +7,13 @@ import * as THREE from 'three'
 
 import InstancedPlane from './mesh/InstancedPlane'
 import ProjectedMaterial from './material/ProjectedMaterial'
+import SDF from './sdf/SDF'
 
 export default class Home {
-  constructor({ scene, sizes, device }) {
+  constructor({ scene, renderer, sizes, device }) {
     this.scene = scene
+
+    this.renderer = renderer
 
     this.sizes = sizes
 
@@ -47,9 +50,7 @@ export default class Home {
       lerp: 0.1
     }
 
-    this.createGeometry()
-
-    this.createMaterial()
+    this.createSDF()
 
     this.createInstancedMesh()
 
@@ -65,26 +66,43 @@ export default class Home {
     this.show()
   }
 
-  createGeometry() {
-    this.planeGeometry = new PlaneGeometry(1, 1, 1, 1)
-  }
-
-  createMaterial() {
-    this.texture = window.TEXTURES['1']
-
-    this.material = new ProjectedMaterial({
-      texture: this.texture
+  createSDF() {
+    this.sdf = new SDF({
+      device: this.device,
+      sizes: this.sizes
     })
   }
 
+  createSDFTexture({ time }) {
+    this.sdf.update(time)
+
+    let currentRenderTarget = this.renderer.getRenderTarget()
+
+    this.renderer.setRenderTarget(this.sdf.rendererTargetA)
+
+    this.renderer.render(this.sdf.scene, this.sdf.camera)
+
+    this.renderer.setRenderTarget(currentRenderTarget)
+
+    let temp = this.sdf.rendererTargetA
+
+    this.sdf.rendererTargetA = this.sdf.rendererTargetB
+
+    this.sdf.rendererTargetB = temp
+
+    this.sdf.mesh.material.uniforms.uBackBuffer.value =
+      this.sdf.rendererTargetB.texture
+  }
+
   createInstancedMesh() {
+    this.texture = window.TEXTURES['1']
+
     this.instancedPlane = new InstancedPlane({
-      geometry: this.planeGeometry,
-      material: this.material,
+      texture: this.texture,
       element: this.element,
       sizes: this.sizes,
       device: this.device,
-      instanceCount: 2500
+      instanceCount: 400
     })
   }
 
@@ -120,14 +138,8 @@ export default class Home {
       this.instancedPlane.onResize(values)
     }
 
-    if (this.material && this.instancedPlane) {
-      const scales = {
-        scaleX: this.instancedPlane.scaleX,
-        scaleY: this.instancedPlane.scaleY,
-        target: this.instancedPlane.mesh
-      }
-
-      this.material.onResize(scales)
+    if (this.sdf) {
+      this.sdf.onResize(values)
     }
   }
 
@@ -157,11 +169,17 @@ export default class Home {
   /**
    * update
    */
-  update({ scroll, time }) {
+  update({ scroll, time, params }) {
+    if (!this.sdf) return
+
+    this.createSDFTexture({ time: time })
+
     if (!this.instancedPlane) return
+
     this.instancedPlane.update({
       scroll: scroll,
-      time: time
+      time: time,
+      texture: this.sdf.rendererTargetB.texture
     })
   }
 

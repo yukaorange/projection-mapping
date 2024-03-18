@@ -79,10 +79,17 @@ export default class Canvas {
     this.pane = new Pane()
 
     this.PARAMS = {
-      alpha: 1
+      alpha: 1,
+      progress: 0
     }
 
     this.pane.addBinding(this.PARAMS, 'alpha', {
+      min: 0,
+      max: 1,
+      step: 0.01
+    })
+
+    this.pane.addBinding(this.PARAMS, 'progress', {
       min: 0,
       max: 1,
       step: 0.01
@@ -101,6 +108,7 @@ export default class Canvas {
   createHome() {
     this.home = new Home({
       scene: this.scene,
+      renderer: this.renderer,
       sizes: this.sizes,
       device: this.device
     })
@@ -274,18 +282,19 @@ export default class Canvas {
   /**loop */
 
   update(scroll) {
-    if (this.home) {
-      this.home.update({ scroll: scroll, time: this.time })
-      this.home.setParameter(this.PARAMS)
-    }
+    const ElapsedTime = this.clock.getElapsedTime()
 
-    const timeDelta = this.clock.getElapsedTime()
+    this.time.delta = this.time.current - this.time.previous
 
     this.time.previous = this.time.current
 
-    this.time.current += timeDelta
+    this.time.current = ElapsedTime
 
-    this.time.delta = this.time.current - this.time.previous
+    if (this.home) {
+      this.home.update({ scroll: scroll, time: this.time, params: this.PARAMS })
+
+      this.home.setParameter(this.PARAMS)
+    }
 
     this.renderer.render(this.scene, this.camera)
   }
