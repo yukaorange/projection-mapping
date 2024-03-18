@@ -39,20 +39,26 @@ vec4 calcScaling(vec4 position, float scale) {
   return scalingMatrix * position;
 }
 
-// lookAt マトリックスを生成する関数
+
 mat4 lookAt(vec3 source, vec3 target) {
-  vec3 up = vec3(0.0, 1.0, 0.0);
-    // 視線ベクトル（Z軸）
-  vec3 zAxis = normalize(source - target);
-    // X軸（右方向ベクトル）
-  vec3 xAxis = normalize(cross(up, zAxis));
-    // Y軸（上方向ベクトル）
-  vec3 yAxis = cross(zAxis, xAxis);
+    vec3 f = normalize(target - source); // forward vector
+    vec3 up = vec3(0.0, 1.0, 0.0); // Up vector
+    vec3 s = normalize(cross(f, up)); // Side vector
+    vec3 u = cross(s, f); // Recompute up vector
 
-    // lookAt マトリックス
-  mat4 lookAtMat = mat4(vec4(xAxis.x, yAxis.x, zAxis.x, 0.0), vec4(xAxis.y, yAxis.y, zAxis.y, 0.0), vec4(xAxis.z, yAxis.z, zAxis.z, 0.0), vec4(-dot(xAxis, source), -dot(yAxis, source), -dot(zAxis, source), 1.0));
+    mat4 result = mat4(
+        vec4(s, 0.0),
+        vec4(u, 0.0),
+        vec4(-f, 0.0), // forward vector is negated
+        vec4(0.0, 0.0, 0.0, 1.0)
+    );
 
-  return lookAtMat;
+    return result * mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        -source.x, -source.y, -source.z, 1.0 // Apply translation
+    );
 }
 
 void main() {
