@@ -96,14 +96,14 @@ void main() {
 
   if(uIsMobile) {
     triangleWidth = 1.0;
-    triangleSize = 0.08;
+    triangleSize = 0.1;
   } else {
     triangleWidth = 3.0;
-    triangleSize = 0.1;
+    triangleSize = 0.12;
   }
 
   float numLayers_tri = 8.0;
-  float layerHeightOffset_tri = 0.1;
+  float layerHeightOffset_tri = 0.01;
   float layer_tri = floor(aInstanceIndex / (uCount / numLayers_tri));
 
   float indexInLayer = mod(aInstanceIndex, (uCount / numLayers_tri));
@@ -139,14 +139,14 @@ void main() {
 
   if(uIsMobile) {
     squareWidth = 1.5;
-    squareSize = 0.08;
+    squareSize = 0.1;
   } else {
     squareWidth = 2.5;
-    squareSize = 0.1;
+    squareSize = 0.13;
   }
 
-  float numLayers_sq = 10.0;
-  float layerHeightOffset_sq = 0.1;
+  float numLayers_sq = 8.0;
+  float layerHeightOffset_sq = 0.01;
   float layer_sq = floor(aInstanceIndex / (uCount / numLayers_sq));
 
   float indexInLayer_sq = mod(aInstanceIndex, (uCount / numLayers_sq));

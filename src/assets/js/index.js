@@ -219,6 +219,8 @@ class App {
     const links = document.querySelectorAll('a')
 
     each(links, link => {
+      if (link.target === '_blank') return
+
       link.onclick = event => {
         const { href } = link
 

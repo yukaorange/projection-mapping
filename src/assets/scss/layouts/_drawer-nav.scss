@@ -17,12 +17,23 @@
 }
 
 .drawer-nav__inner {
+  height: 100%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }
 .drawer-nav__list {
+  display: grid;
+  justify-items: center;
 }
 .drawer-nav__list__item {
 }
 .drawer-nav__list__item__link {
+  font-weight: 500;
+  font-size: 1.8rem;
 }
 .drawer-nav__close {
+  margin-top: 0.8rem;
+  font-size: 1.6rem;
 }

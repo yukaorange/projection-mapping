@@ -61,7 +61,7 @@ void main() {
 
   float circle = 1.0 - circleSDF(coord, vec2(aspect, 1.0));
 
-  circle *= 2.0 * cos(circle * 2000.);
+  circle *= 2.0 * cos(circle * 1500.);
 
   vec3 red_circle = vec3(1.0, 0.1, 0.1);
 
