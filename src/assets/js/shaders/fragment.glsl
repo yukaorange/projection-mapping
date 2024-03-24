@@ -63,7 +63,7 @@ void main() {
 
   circle *= 2.0 * cos(circle * 2000.);
 
-  vec3 red_circle = vec3(1.0, 0.0, 0.1);
+  vec3 red_circle = vec3(1.0, 0.1, 0.1);
 
   red_circle *= circle;
 
