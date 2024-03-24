@@ -78,24 +78,24 @@ export default class Canvas {
   }
 
   createPane() {
-    this.pane = new Pane()
+    // this.pane = new Pane()
 
     this.PARAMS = {
       alpha: 1,
       progress: 0
     }
 
-    this.pane.addBinding(this.PARAMS, 'alpha', {
-      min: 0,
-      max: 1,
-      step: 0.01
-    })
+    // this.pane.addBinding(this.PARAMS, 'alpha', {
+    //   min: 0,
+    //   max: 1,
+    //   step: 0.01
+    // })
 
-    this.pane.addBinding(this.PARAMS, 'progress', {
-      min: 0,
-      max: 1,
-      step: 0.01
-    })
+    // this.pane.addBinding(this.PARAMS, 'progress', {
+    //   min: 0,
+    //   max: 1,
+    //   step: 0.01
+    // })
   }
 
   createControls() {
