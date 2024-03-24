@@ -1,8 +1,28 @@
 @use "./../mixin/" as *;
 .drawer-nav {
-  display: none;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background-color: var(--gray-1);
+  transform: translateX(100%);
 }
 
-.drawer-nav.active {
-  display: block;
+.drawer-nav[aria-hidden="false"] {
+  transition-duration: 0.2s;
+  transform: translateX(0);
+}
+.drawer-nav[aria-hidden="true"] {
+  transition-duration: 0.2s;
+  transform: translateX(100%);
+}
+
+.drawer-nav__inner {
+}
+.drawer-nav__list {
+}
+.drawer-nav__list__item {
+}
+.drawer-nav__list__item__link {
+}
+.drawer-nav__close {
 }

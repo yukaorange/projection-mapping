@@ -1,0 +1,24 @@
+@use "./../mixin/" as *;
+
+.drawer-button {
+  position: fixed;
+  z-index: 1001;
+  top: 2rem;
+  right: 2rem;
+  text-transform: uppercase;
+  font-size: 1.8rem;
+  color: var(--white-1);
+}
+
+.drawer-button[aria-expanded="true"] .drawer-button__text--menu {
+  display: none;
+}
+
+.drawer-button[aria-expanded="false"] .drawer-button__text--close {
+  display: none;
+}
+
+.drawer-button__text--menu {
+}
+.drawer-button__text--close {
+}

@@ -7,7 +7,7 @@ import vertex from '@js/shaders/vertex.glsl'
 import fragment from '@js/shaders/fragment.glsl'
 
 export default class ProjectedMaterial extends ShaderMaterial {
-  constructor({ texture, instanceCount }) {
+  constructor({ texture, instanceCount, device }) {
     let width = texture.source.data.width
 
     let height = texture.source.data.height
@@ -46,29 +46,42 @@ export default class ProjectedMaterial extends ShaderMaterial {
         uProjectorViewMatrix: { value: projectorViewMatrix },
         uProjectorModelMatrix: { value: projectorModelMatix },
         uProjectorPosition: { value: projectorPosition },
+        uResolution: {
+          value: new THREE.Vector2(window.innerWidth, window.innerHeight)
+        },
         uCount: { value: instanceCount },
         uAlpha: { value: 1 },
-        uTime: { value: 0 }
+        uTime: { value: 0 },
+        uProgress: { value: 0 },
+        uAnimation01: { value: 0 },
+        uAnimation02: { value: 0 },
+        uAnimation03: { value: 0 },
+        uAnimation04: { value: 0 },
+        uIsMobile: { value: device === 'sp' ? 1 : 0 }
       }
     })
 
     this.texture = texture
+
+    this.device = device
 
     this.projector = projector
   }
 
   update() {}
 
-  onResize(scales) {
+  onResize(params) {
+    this.device = params.device
+
     const targetPosition = new THREE.Vector3(
-      scales.mesh.position.x +
-        scales.standardPositionX +
-        scales.scaleX / 2 -
-        scales.mesh.scale.x / 2,
-      scales.mesh.position.y +
-        scales.standardPositionY -
-        scales.scaleY / 2 +
-        scales.mesh.scale.y / 2,
+      params.mesh.position.x +
+        params.standardPositionX +
+        params.scaleX / 2 -
+        params.mesh.scale.x / 2,
+      params.mesh.position.y +
+        params.standardPositionY -
+        params.scaleY / 2 +
+        params.mesh.scale.y / 2,
       5
     )
 
@@ -80,14 +93,14 @@ export default class ProjectedMaterial extends ShaderMaterial {
 
     this.projector.lookAt(targetPosition.x, targetPosition.y, 0)
 
-    this.projector.aspect = scales.scaleX / scales.scaleY
+    this.projector.aspect = params.scaleX / params.scaleY
 
-    const aspectX = scales.scaleX / scales.scaleY
-    const aspectY = scales.scaleY / scales.scaleX
+    const aspectX = params.scaleX / params.scaleY
+    const aspectY = params.scaleY / params.scaleX
 
     const distance = this.projector.position.z
 
-    const halfHeight = scales.scaleY / 2
+    const halfHeight = params.scaleY / 2
 
     const rad = Math.PI / 180
 
@@ -117,5 +130,12 @@ export default class ProjectedMaterial extends ShaderMaterial {
     this.uniforms.uTextureAspectX.value = aspectX / this.textureAspectX
 
     this.uniforms.uTextureAspectY.value = aspectY / this.textureAspectY
+
+    this.uniforms.uIsMobile.value = this.device === 'sp' ? 1 : 0
+
+    this.uniforms.uResolution.value = new THREE.Vector2(
+      window.innerWidth,
+      window.innerHeight
+    )
   }
 }

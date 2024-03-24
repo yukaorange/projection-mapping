@@ -56,7 +56,7 @@ export default class Home {
 
     this.scene.add(this.instancedPlane.mesh)
 
-    this.createHelper()
+    // this.createHelper()
 
     this.onResize({
       sizes: this.sizes,
@@ -102,7 +102,7 @@ export default class Home {
       element: this.element,
       sizes: this.sizes,
       device: this.device,
-      instanceCount: 400
+      instanceCount: 225
     })
   }
 
@@ -116,6 +116,14 @@ export default class Home {
     this.scene.add(this.cameraHelper)
 
     this.scene.add(this.axesHelper)
+  }
+
+  /**
+   * animation param
+   */
+
+  addAnimationsParam(animationsParam) {
+    this.animationsParam = animationsParam
   }
 
   /**
@@ -134,6 +142,8 @@ export default class Home {
    * events
    */
   onResize(values) {
+    this.device = values.device
+
     if (this.instancedPlane) {
       this.instancedPlane.onResize(values)
     }
@@ -179,12 +189,10 @@ export default class Home {
     this.instancedPlane.update({
       scroll: scroll,
       time: time,
-      texture: this.sdf.rendererTargetB.texture
+      texture: this.sdf.rendererTargetB.texture,
+      params: params,
+      animations: this.animationsParam
     })
-  }
-
-  setParameter(params) {
-    this.instancedPlane.setParameter(params)
   }
 
   /**

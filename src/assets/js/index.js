@@ -9,8 +9,6 @@ import Preloader from '@js/component/Preloader'
 import DrawerNavigation from '@js/component/DrawerNavigation'
 
 import Home from '@js/pages/Home/Home'
-import Page2 from '@js/pages/Page2/Page2'
-import Page3 from '@js/pages/Page3/Page3'
 
 const assets = document.querySelectorAll('.preloader img')
 
@@ -74,6 +72,8 @@ class App {
 
     this.canvas.onPreloaded()
 
+    this.addAnimationObserver()
+
     this.page.show()
   }
 
@@ -83,14 +83,30 @@ class App {
 
   createPages() {
     this.pages = {
-      home: new Home(),
-      page2: new Page2(),
-      page3: new Page3()
+      home: new Home()
     }
 
     this.page = this.pages[this.template]
 
     this.page.create()
+  }
+
+  // Animation Amount
+  addAnimationObserver() {
+    this.animationsParam = {
+      animation01: { value: 1 },
+      animation02: { value: 0 },
+      animation03: { value: 0 },
+      animation04: { value: 0 }
+    }
+
+    if (this.pages.home) {
+      this.pages.home.createUI(this.animationsParam)
+    }
+
+    if (this.canvas) {
+      this.canvas.addAnimationsParam(this.animationsParam)
+    }
   }
 
   // Listeners
@@ -153,11 +169,17 @@ class App {
       } else {
         this.resizeFlag = true
       }
+
+      // if (this.canvas && this.canvas.onResize && this.resizeFlag === true) {
+      //   this.canvas.onResize(this.device)
+      // }
     }, 10)
 
-    if (this.canvas && this.canvas.onResize && this.resizeFlag === true) {
+    if (this.canvas?.onResize) {
       this.canvas.onResize(this.device)
     }
+
+    this.currentWidth = window.innerWidth
   }
 
   onTouchDown(event) {
@@ -312,7 +334,7 @@ class App {
     }
 
     if (this.canvas && this.canvas.update) {
-      this.canvas.update(this.page.scroll)
+      this.canvas.update({ scroll: this.page.scroll })
     }
 
     this.frame = window.requestAnimationFrame(this.update.bind(this))

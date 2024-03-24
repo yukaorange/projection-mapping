@@ -15,65 +15,14 @@ vec2 rotate2D(vec2 _st, float _angle) {
   return _st;
 }
 
-vec2 movingTiles(vec2 _st, float _zoom, float _speed, float _time) {
+vec3 movingTiles(vec2 _st, float _zoom, float _speed, float _time) {
   _st *= _zoom;
 
   float time = _time * _speed;
-
-  if(fract(time) > 0.5) {
-    if(fract(_st.y * 0.5) > 0.5) {
-      _st.x += fract(time) * 2.0;
-    } else {
-      _st.x -= fract(time) * 2.0;
-    }
-  } else {
-    if(fract(_st.x * 0.5) > 0.5) {
-      _st.y += fract(time) * 2.0;
-    } else {
-      _st.y -= fract(time) * 2.0;
-    }
-  }
-  return fract(_st);
-}
-
-vec2 rotatetilePattern(vec2 _st) {
-
-  _st *= 2.0;
 
   float index = 0.0;
-  index += step(1., mod(_st.x, 2.0));
-  index += step(1., mod(_st.y, 2.0)) * 2.0;
-
-    //      |
-    //  2   |   3
-    //      |
-    //--------------
-    //      |
-    //  0   |   1
-    //      |
-
-  _st = fract(_st);
-
-    // Rotate each cell according to the index
-  if(index == 1.0) {
-    _st = rotate2D(_st, PI * 0.5);
-  } else if(index == 2.0) {
-    _st = rotate2D(_st, PI * -0.5);
-  } else if(index == 3.0) {
-    _st = rotate2D(_st, PI);
-  }
-
-  return _st;
-}
-
-vec3 movingTilesWithIndex(vec2 _st, float _zoom, float _speed, float _time) {
-  _st *= _zoom;
-
-  vec2 gridPos = floor(_st);
-
-  float index = mod(gridPos.x + gridPos.y, 2.0);
-
-  float time = _time * _speed;
+  index += floor(mod(_st.x, _zoom));
+  index += floor(mod(_st.y, _zoom)) * _zoom;
 
   if(fract(time) > 0.5) {
     if(fract(_st.y * 0.5) > 0.5) {
@@ -92,31 +41,21 @@ vec3 movingTilesWithIndex(vec2 _st, float _zoom, float _speed, float _time) {
   return vec3(fract(_st), index);
 }
 
-vec2 tile(vec2 _st, float _zoom) {
-  _st *= _zoom;
-  return fract(_st);
-}
-
-float stroke(float x, float s, float w) {
-  float d = step(s, x + w * 0.5) - step(s, x - w * 0.5);
-
-  return clamp(d, 0., 1.);
-}
-
-float circle(vec2 st) {
-  return length(st - vec2(0.5)) * 5.0;
-}
-
-mat2 rotate(float a) {
-  float s = sin(a), c = cos(a);
-  return mat2(c, s, -s, c);
+float sdX(vec2 st, float w) {
+  vec2 stAbs;
+  stAbs = abs(st);
+  float a = length(stAbs);
+  float b = length(stAbs.x + stAbs.y);
+    // return a;
+    // return b;
+    // return b-a;
+    // return smoothstep(0.,0.01,b-a);
+  return length(stAbs - min(stAbs.x + stAbs.y, w) * 0.5);
 }
 
 float box(in vec2 _st, in vec2 _size) {
-  _size = vec2(0.5) - _size * 0.3;
-
+  _size = vec2(0.5) - _size * 0.5;
   vec2 uv = smoothstep(_size, _size + vec2(0.001), _st);
-
   uv *= smoothstep(_size, _size + vec2(0.001), vec2(1.0) - _st);
   return uv.x * uv.y;
 }
@@ -134,14 +73,53 @@ void main() {
   float tt = tanh(fract(lt) * 5.0);
   lt = bt + tt;
 
-  uv = movingTiles(uv, 7., 0.2, lt);
+  vec3 color = vec3(0.);
 
-  float sdf = crossSDF(uv, 1.0);
+  vec3 movingCell = movingTiles(uv, 11., 0.2, lt);
 
-  vec3 color = vec3(sdf);
+  uv = movingCell.xy;
+
+  float cell_index = movingCell.z;
+
+  float sdf_cross = crossSDF(uv, 0.3);
+
+  uv = uv * 2.0 - 1.0;
+
+  float width = 0.5;
+
+  float sdf_X = sdX(uv, width);
+
+  sdf_X = smoothstep(0.01, 0.05, sdf_X);
+
+  float basis = 12.0;
+
+  if(mod(cell_index, basis) == 0.0) {
+    color = vec3(sdf_X);
+  } else if(mod(cell_index, basis) == 1.0) {
+    color = vec3(sdf_cross);
+  } else if(mod(cell_index, basis) == 2.0) {
+    color = vec3(sdf_X);
+  } else if(mod(cell_index, basis) == 3.0) {
+    color = vec3(sdf_cross);
+  } else if(mod(cell_index, basis) == 4.0) {
+    color = vec3(sdf_X);
+  } else if(mod(cell_index, basis) == 5.0) {
+    color = vec3(sdf_cross);
+  } else if(mod(cell_index, basis) == 6.0) {
+    color = vec3(sdf_X);
+  } else if(mod(cell_index, basis) == 7.0) {
+    color = vec3(sdf_cross);
+  } else if(mod(cell_index, basis) == 8.0) {
+    color = vec3(sdf_X);
+  } else if(mod(cell_index, basis) == 9.0) {
+    color = vec3(sdf_cross);
+  } else if(mod(cell_index, basis) == 10.0) {
+    color = vec3(sdf_X);
+  } else if(mod(cell_index, basis) == 11.0) {
+    color = vec3(sdf_cross);
+  }
 
   gl_FragColor = vec4(color, 1.0);
-  // gl_FragColor = vec4(uv, 0., 1.0);
 
 }
 

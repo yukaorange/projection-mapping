@@ -14,6 +14,8 @@ export default class Canvas {
 
     this.device = device
 
+    this.renderInterval = this.isMobile ? 1000 / 30 : 1000 / 60
+
     this.x = {
       start: 0,
       end: 0
@@ -53,7 +55,7 @@ export default class Canvas {
 
     this.renderer.setClearColor(0x000000, 0)
 
-    this.renderer.setPixelRatio(window.devicePixelRatio)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     this.renderer.setSize(window.innerWidth, window.innerHeight)
 
@@ -118,6 +120,15 @@ export default class Canvas {
     this.home.destroy()
   }
 
+  /**animation */
+  addAnimationsParam(animationsParam) {
+    this.animationsParam = animationsParam
+
+    if (this.home) {
+      this.home.addAnimationsParam(this.animationsParam)
+    }
+  }
+
   /**
    * events
    */
@@ -152,6 +163,8 @@ export default class Canvas {
     const height = 2 * Math.tan(fov / 2) * this.camera.position.z //z = 5 is setted at this.createCamera
 
     const width = height * aspect //To fit clip space to screen.
+
+    this.renderInterval = this.isMobile ? 1000 / 30 : 1000 / 60
 
     this.sizes = {
       //Calclated viewport space sizes.
@@ -281,7 +294,7 @@ export default class Canvas {
 
   /**loop */
 
-  update(scroll) {
+  update({ scroll, device }) {
     const ElapsedTime = this.clock.getElapsedTime()
 
     this.time.delta = this.time.current - this.time.previous
@@ -291,11 +304,18 @@ export default class Canvas {
     this.time.current = ElapsedTime
 
     if (this.home) {
-      this.home.update({ scroll: scroll, time: this.time, params: this.PARAMS })
-
-      this.home.setParameter(this.PARAMS)
+      this.home.update({
+        scroll: scroll,
+        time: this.time,
+        params: this.PARAMS
+      })
     }
 
     this.renderer.render(this.scene, this.camera)
+    if (this.time.delta > this.renderInterval) {
+
+      this.time.previous =
+        this.time.current - (this.time.delta % this.renderInterval)
+    }
   }
 }

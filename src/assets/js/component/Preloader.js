@@ -78,6 +78,13 @@ export default class Preloader extends Component {
    */
 
   destroy() {
-    this.element.parentNode.removeChild(this.element)
+    GSAP.to(this.element, {
+      autoAlpha: 0,
+      duration: 1.4,
+      ease: 'expo.out',
+      onComplete: () => {
+        this.element.parentNode.removeChild(this.element)
+      }
+    })
   }
 }

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "format": "vite build && npm run format-html",
     "build": "vite build",
     "production": "vite build",

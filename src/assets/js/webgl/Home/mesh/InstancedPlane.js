@@ -35,14 +35,15 @@ export default class InstancedPlane {
   }
 
   createGeometry() {
-    this.geometry = new THREE.BoxGeometry(1, 1, 0.25, 100, 100)
+    this.geometry = new THREE.BoxGeometry(1, 1, 0.25, 10, 10)
     // this.geometry = new THREE.PlaneGeometry(1, 1, 100, 100)
   }
 
   createMaterial() {
     this.material = new ProjectedMaterial({
       texture: this.texture,
-      instanceCount: this.instanceCount
+      instanceCount: this.instanceCount,
+      device: this.device
     })
   }
 
@@ -108,48 +109,48 @@ export default class InstancedPlane {
     }
   }
 
-  // calclateMatrixToSphere() {
-  //   const radius = 2
-  //   const matrices = new Float32Array(this.instanceCount * 16)
+  calclateMatrixToSphere() {
+    const radius = 2
+    const matrices = new Float32Array(this.instanceCount * 16)
 
-  //   const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5))
 
-  //   for (let i = 0; i < this.instanceCount; i++) {
-  //     const theta = i * goldenAngle // 方位角
-  //     const phi = Math.acos(1 - (2 * (i + 0.5)) / this.instanceCount) // 仰角
+    for (let i = 0; i < this.instanceCount; i++) {
+      const theta = i * goldenAngle // 方位角
+      const phi = Math.acos(1 - (2 * (i + 0.5)) / this.instanceCount) // 仰角
 
-  //     const x = radius * Math.sin(phi) * Math.cos(theta)
-  //     const y = radius * Math.sin(phi) * Math.sin(theta)
-  //     const z = radius * Math.cos(phi)
+      const x = radius * Math.sin(phi) * Math.cos(theta)
+      const y = radius * Math.sin(phi) * Math.sin(theta)
+      const z = radius * Math.cos(phi)
 
-  //     const position = new THREE.Vector3(x, y, z)
-  //     const target = new THREE.Vector3(0, 0, 0)
-  //     const up = new THREE.Vector3(0, 1, 0)
+      const position = new THREE.Vector3(x, y, z)
+      const target = new THREE.Vector3(0, 0, 0)
+      const up = new THREE.Vector3(0, 1, 0)
 
-  //     const rotateMatrix = new THREE.Matrix4()
-  //     rotateMatrix.lookAt(position, target, up)
+      const rotateMatrix = new THREE.Matrix4()
+      rotateMatrix.lookAt(position, target, up)
 
-  //     const scaleMatrix = new THREE.Matrix4()
-  //     scaleMatrix.makeScale(0.1, 0.1, 0.1)
+      const scaleMatrix = new THREE.Matrix4()
+      scaleMatrix.makeScale(0.1, 0.1, 0.1)
 
-  //     const matrix = new THREE.Matrix4()
-  //     matrix.multiply(rotateMatrix)
-  //     matrix.multiply(scaleMatrix)
-  //     matrix.setPosition(position)
+      const matrix = new THREE.Matrix4()
+      matrix.multiply(rotateMatrix)
+      matrix.multiply(scaleMatrix)
+      matrix.setPosition(position)
 
-  //     matrix.toArray(matrices, i * 16)
-  //   }
+      matrix.toArray(matrices, i * 16)
+    }
 
-  //   const matrixData = new Float32Array(matrices)
+    const matrixData = new Float32Array(matrices)
 
-  //   const instancedMatrixAttribute = new THREE.InstancedBufferAttribute(
-  //     matrixData,
-  //     16,
-  //     false
-  //   )
+    const instancedMatrixAttribute = new THREE.InstancedBufferAttribute(
+      matrixData,
+      16,
+      false
+    )
 
-  //   this.mesh.geometry.setAttribute('aSphereMatrix', instancedMatrixAttribute)
-  // }
+    this.mesh.geometry.setAttribute('aSphereMatrix', instancedMatrixAttribute)
+  }
 
   calclateMatrixToTriangle(n = 3) {
     const baseRadius = 3
@@ -227,12 +228,12 @@ export default class InstancedPlane {
     this.mesh.geometry.setAttribute('aInstanceIndex', indexAttribute)
   }
 
-  updateInstanceProperty({ n = 3 } = {}) {
+  updateInstanceProperty() {
     this.calclateMatrixToProjection()
 
     // this.calclateMatrixToSphere()
 
-    this.calclateMatrixToTriangle(n)
+    // this.calclateMatrixToTriangle(3)
 
     this.addIndices()
 
@@ -262,23 +263,25 @@ export default class InstancedPlane {
   /**
    * events
    */
-  onResize(value) {
-    this.calculateBounds(value)
+  onResize(values) {
+    this.device = values.device
 
-    this.updateInstanceProperty({
-      n: 3
-    })
+    this.calculateBounds(values)
+
+    this.updateInstanceProperty()
 
     if (this.material) {
-      const scales = {
+      const params = {
         scaleX: this.scaleX,
         scaleY: this.scaleY,
         standardPositionX: this.standardPositionX,
         standardPositionY: this.standardPositionY,
-        mesh: this.mesh
+        resolution: [window.innerWidth, window.innerHeight],
+        mesh: this.mesh,
+        device: this.device
       }
 
-      this.material.onResize(scales)
+      this.material.onResize(params)
     }
   }
 
@@ -300,7 +303,7 @@ export default class InstancedPlane {
 
   updateY(y = 0) {}
 
-  update({ scroll, time, texture }) {
+  update({ scroll, time, texture, params, animations }) {
     this.updateX(scroll.x)
 
     this.updateY(scroll.y)
@@ -308,9 +311,15 @@ export default class InstancedPlane {
     this.material.uniforms.uTexture.value = texture
 
     this.material.uniforms.uTime.value += time.delta
-  }
 
-  setParameter(params) {
-    this.mesh.material.uniforms.uAlpha.value = params.alpha
+    this.material.uniforms.uProgress.value = params.progress
+
+    this.material.uniforms.uAnimation01.value = animations['animation01'].value
+
+    this.material.uniforms.uAnimation02.value = animations['animation02'].value
+
+    this.material.uniforms.uAnimation03.value = animations['animation03'].value
+
+    this.material.uniforms.uAnimation04.value = animations['animation04'].value
   }
 }

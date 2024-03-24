@@ -1,0 +1,192 @@
+@use "./../mixin/" as *;
+
+.ui {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: grid;
+  row-gap: 3.2rem;
+  align-content: end;
+  mix-blend-mode: exclusion;
+}
+
+.ui__header {
+  margin-top: auto;
+  margin-left: 4rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 0;
+  padding-bottom: 1.8rem;
+  &::after {
+    content: "";
+    width: calc(100% - 4rem);
+    height: 0.1rem;
+    background-color: var(--white-1);
+    display: block;
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+  }
+}
+
+.ui__header__text {
+  display: grid;
+  width: 80rem;
+}
+
+.ui__header__text--screen {
+  visibility: hidden;
+  display: block;
+  opacity: 0;
+  height: 0;
+}
+.ui__inner {
+  margin-inline: 4rem;
+  margin-bottom: 6.4rem;
+  display: grid;
+}
+
+.ui__list {
+  width: fit-content;
+  margin-left: auto;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(4, auto);
+  column-gap: 2.4rem;
+}
+
+.ui__list__item {
+  width: 5rem;
+}
+
+.ui__list__item.ui__list__item--circle {
+}
+
+.ui__list__item.ui__list__item--cross {
+}
+
+.ui__list__item.ui__list__item--rectangle {
+}
+
+.ui__list__item.ui__list__item--triangle {
+  width: 6rem;
+}
+
+.ui__list__item__button {
+  display: grid;
+  position: relative;
+  z-index: 0;
+  padding-bottom: 1.4rem;
+  cursor: pointer;
+}
+
+.ui__list__item__button {
+  &::after {
+    content: "";
+    width: 100%;
+    height: 0.1rem;
+    background-color: var(--white-1);
+    display: block;
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    mix-blend-mode: exclusion;
+    transition: 0.2s;
+    scale: 0;
+  }
+}
+.ui__list__item__button.active {
+  &::after {
+    scale: 1;
+  }
+}
+
+@include mq(sp) {
+  .ui {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    display: grid;
+    row-gap: 1.8rem;
+    align-content: end;
+  }
+
+  .tp-dfwv {
+    display: none !important;
+  }
+
+  .ui__header {
+    margin-top: auto;
+    margin-left: 2rem;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 0;
+    padding-bottom: 1.6rem;
+    &::after {
+      content: "";
+      width: calc(100% - 2rem);
+      height: 0.1rem;
+      background-color: var(--white-1);
+      display: block;
+      position: absolute;
+      z-index: 1;
+      bottom: 0;
+    }
+  }
+
+  .ui__header__text {
+    display: grid;
+    width: 28rem;
+    // max-width: calc(100% - 4rem);
+  }
+
+  .ui__header__text--screen {
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    display: block;
+    opacity: 0;
+    height: 0;
+  }
+  .ui__inner {
+    margin-inline: 2rem;
+    margin-bottom: 0rem;
+    padding-bottom: 5rem;
+    display: grid;
+  }
+
+  .ui__list {
+    width: fit-content;
+    margin-left: auto;
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(4, auto);
+    column-gap: 3.2rem;
+  }
+
+  .ui__list__item {
+    width: 4rem;
+  }
+
+  .ui__list__item.ui__list__item--circle {
+  }
+
+  .ui__list__item.ui__list__item--cross {
+  }
+
+  .ui__list__item.ui__list__item--rectangle {
+  }
+
+  .ui__list__item.ui__list__item--triangle {
+    width: 4.2rem;
+  }
+
+  .ui__list__item__button {
+    display: grid;
+    cursor: pointer;
+  }
+}

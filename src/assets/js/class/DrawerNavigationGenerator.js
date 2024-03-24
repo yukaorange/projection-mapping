@@ -12,9 +12,12 @@ export default class DrawerNavigationGenerator {
     this.closeButton = closeButton || null
     this.drawerInner = drawerInner
 
+
     // Set initial ARIA attributes
     this.drawerButton.setAttribute('aria-expanded', 'false')
+
     this.nav.setAttribute('aria-hidden', 'true')
+    
     if (this.closeButton) {
       this.closeButton.setAttribute('tabindex', '0')
     }

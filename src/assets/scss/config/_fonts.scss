@@ -1,18 +1,34 @@
 html {
   @font-face {
-    font-family: "Jost";
+    font-family: "Lato";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 700;
     font-display: swap;
-    src: url("/fonts/Jost-Regular.woff") format("woff");
+    src: url("/fonts/Lato-Bold.woff") format("woff");
   }
 
   @font-face {
-    font-family: "Jost";
+    font-family: "Lato";
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    src: url("/fonts/Jost-Medium.woff") format("woff");
+    src: url("/fonts/NotoSansJP-Medium.woff") format("woff");
+  }
+
+  @font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Lato-Regular.woff") format("woff");
+  }
+
+  @font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url("/fonts/Lato-Light.woff") format("woff");
   }
 
   @font-face {
@@ -38,35 +54,11 @@ html {
     font-display: swap;
     src: url("/fonts/NotoSansJP-Bold.woff") format("woff");
   }
-
-  @font-face {
-    font-family: "Noto Serif JP";
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url("/fonts/NotoSerifJP-Regular.woff") format("woff");
-  }
-
-  @font-face {
-    font-family: "Noto Serif JP";
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url("/fonts/NotoSerifJP-Medium.woff") format("woff");
-  }
-
-  @font-face {
-    font-family: "Noto Serif JP";
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url("/fonts/NotoSerifJP-Bold.woff") format("woff");
-  }
 }
 
 ._en {
   font-family:
-    "Jost",
+    "Lato",
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
@@ -78,9 +70,4 @@ html {
     "Open Sans",
     "Helvetica Neue",
     sans-serif;
-}
-
-._serif {
-  font-family: "Noto Serif JP", "Times New Roman", "YuMincho", "Hiragino Mincho ProN", "Yu Mincho", "MS PMincho",
-    system-ui, serif;
 }

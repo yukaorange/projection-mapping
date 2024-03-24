@@ -13,7 +13,8 @@ export default class DrawerNavigation extends Component {
         list: '.drawer-nav__list',
         item: '.drawer-nav__list__item',
         link: '.drawer-nav__list__item__link',
-        button: document.querySelector('.drawer-button')
+        button: document.querySelector('.drawer-button'),
+        closeButton: document.querySelector('.drawer-nav__close')
       }
     })
 
@@ -25,7 +26,8 @@ export default class DrawerNavigation extends Component {
       button: this.elements.button,
       drawerNav: this.element,
       drawerInner: this.elements.inner,
-      drawerNavButton: this.elements.link
+      drawerNavButton: this.elements.link,
+      closeButton: this.elements.closeButton
     })
   }
 }
